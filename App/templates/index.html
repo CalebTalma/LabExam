@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  
+     <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Home</title>
+
+    <style>
+      * { box-sizing: border-box; }
+      .row { margin: 0; }
+      body {
+        display: flex;
+        height: 100vh;
+        flex-direction: column;
+      }
+      nav {
+        flex-grow: 1;
+        margin-bottom: 0;
+      }
+      main {
+        flex-grow: 10;
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+      }
+      .card {
+        width: 250px;
+        margin: 2px;
+      }
+
+
+    </style>
+
+  </head>
+  <body>
+
+    <nav class="nav-extended purple">
+      <div class="nav-wrapper">
+        <span style="margin-left: 10px;">Music Tracks App</span>
+        <ul id="nav-mobile" class="right">
+          <li><a href="/logout">Logout</a></li>
+        </ul>
+      </div>
+      <div class="nav-content purple"></div>
+    </nav>
+
+    <div class="row" style="margin-top: 10px; position: absolute; height:30px; width: 100vw;">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="blue lighten-5 col s10 offset-s1">
+              <div class="row"> 
+                <div class="col s11" style="font-weight: bold;text-align: center">{{ message }}</div>
+                <div class="col s1">
+                  <a href="" style="font-size:1.5em" >&times;</a>
+                </div>  
+              </div>
+            </div> 
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <main class="row">
+      <section class="col s8">
+        <form class="row" method="get" action="/app">
+          <div class="input-field col s12">
+            <select name="genre" onchange="this.form.submit()">
+              <option value="all" {% if selected_genre == 'all' %}selected{% endif %}>All</option>
+              {% for g in genre_list %}
+                <option value="{{ g }}" {% if selected_genre == g %}selected{% endif %}>{{ g }}</option>
+              {% endfor %}
+            </select>
+            <label>Select Genre</label>
+          </div>
+        </form>
+
+        <div class="row" style="overflow-y: scroll; height:75vh; margin:10px">
+          {% for track in tracks %}
+            <div class="card col sm-3">
+              <div class="card-content">
+                <span class="card-title">{{ track.title }}</span>
+                <p>{{ track.album }} - {{ track.artist }}</p>
+              </div>
+              <div class="card-action">
+                <form method="post" action="/add">
+                  <input type="hidden" name="track_id" value="{{ track.id }}">
+                  <button class="btn-flat purple-text" type="submit">Add to Queue</button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="col s4">
+        <ul class="collection with-header" style="overflow-y: scroll; height:85vh; margin:10px">
+          <li class="collection-header"><h4>Play Queue</h4></li>
+          {% for track in queue %}
+            <li class="collection-item">
+              <div>
+                {{ track.title }}
+                <a href="/remove/{{ track.id }}" class="secondary-content"><i class="material-icons">delete</i></a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script> M.AutoInit(); </script>
+  </body>
+</html>
